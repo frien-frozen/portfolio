@@ -17,8 +17,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bakhtiyorov Portfolio",
+  title: "Bakhtiyorov's Portfolio",
   description: "Personal portfolio and blog",
+  icons: {
+    icon: '/profile.png',
+  },
 };
 
 export default function RootLayout({

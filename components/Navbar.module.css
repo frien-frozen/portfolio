@@ -21,12 +21,27 @@
 }
 
 .logo {
-  font-size: 1.2rem;
-  font-weight: 700;
-  text-decoration: none;
-  color: var(--foreground);
-  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
 }
+
+.logoImage {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  max-width: 40px;
+  max-height: 40px;
+  object-fit: cover;
+  margin-left: -10px;
+  display: block;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
 
 .links {
   display: flex;
@@ -43,6 +58,11 @@
 
 .link:hover {
   color: var(--foreground);
+}
+
+.active {
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 @media (max-width: 768px) {

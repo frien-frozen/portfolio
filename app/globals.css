@@ -1,5 +1,33 @@
 @import "tailwindcss";
 
+/* Prevent text selection except for inputs and text areas */
+*:not(input):not(textarea) {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+body {
+  cursor: default;
+}
+
+/* Cursor pointer for all interactive elements */
+a,
+a *,
+button,
+button *,
+[role="button"],
+[type="button"],
+[type="submit"],
+[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+select,
+summary,
+.cursor-pointer,
+[onclick] {
+  cursor: pointer !important;
+}
+
 :root {
   --background: #030014;
   --foreground: #ffffff;

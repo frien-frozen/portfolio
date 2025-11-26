@@ -3,8 +3,40 @@
 import styles from './page.module.css';
 import { motion } from 'framer-motion';
 import { Send, Mail } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Contact() {
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setStatus('loading');
+
+        const formData = new FormData(e.currentTarget);
+        const data = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            message: formData.get('message'),
+        };
+
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            if (res.ok) {
+                setStatus('success');
+                (e.target as HTMLFormElement).reset();
+            } else {
+                setStatus('error');
+            }
+        } catch (error) {
+            setStatus('error');
+        }
+    };
+
     return (
         <motion.div
             className={styles.container}
@@ -22,33 +54,37 @@ export default function Contact() {
                     whileHover={{ scale: 1.05, borderColor: 'rgba(118, 58, 245, 0.5)' }}
                 >
                     <Mail size={20} color="#763AF5" />
-                    <a href="mailto:ismatullohbakh2010@gmail.com" style={{ color: '#fff', textDecoration: 'none', fontWeight: 500 }}>
-                        ismatullohbakh2010@gmail.com
+                    <a href="mailto:contact@baxtiyorov.uz" style={{ color: '#fff', textDecoration: 'none', fontWeight: 500 }}>
+                        contact@baxtiyorov.uz
                     </a>
                 </motion.div>
             </div>
 
-            <form className={styles.form}>
+            <form className={styles.form} onSubmit={handleSubmit}>
                 <div className={styles.group}>
                     <label htmlFor="name" className={styles.label}>Name</label>
-                    <input type="text" id="name" className={styles.input} placeholder="Your Name" />
+                    <input type="text" id="name" name="name" className={styles.input} placeholder="Your Name" required />
                 </div>
                 <div className={styles.group}>
                     <label htmlFor="email" className={styles.label}>Email</label>
-                    <input type="email" id="email" className={styles.input} placeholder="your@email.com" />
+                    <input type="email" id="email" name="email" className={styles.input} placeholder="your@email.com" required />
                 </div>
                 <div className={styles.group}>
                     <label htmlFor="message" className={styles.label}>Message</label>
-                    <textarea id="message" className={styles.textarea} placeholder="How can I help you?"></textarea>
+                    <textarea id="message" name="message" className={styles.textarea} placeholder="How can I help you?" required></textarea>
                 </div>
                 <motion.button
                     type="submit"
                     className={styles.button}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    disabled={status === 'loading'}
+                    style={{ opacity: status === 'loading' ? 0.7 : 1 }}
                 >
-                    Send Message <Send size={18} />
+                    {status === 'loading' ? 'Sending...' : 'Send Message'} <Send size={18} />
                 </motion.button>
+                {status === 'success' && <p style={{ color: '#4ade80', marginTop: '1rem', textAlign: 'center' }}>Message sent successfully!</p>}
+                {status === 'error' && <p style={{ color: '#ef4444', marginTop: '1rem', textAlign: 'center' }}>Failed to send message. Please try again.</p>}
             </form>
         </motion.div>
     );

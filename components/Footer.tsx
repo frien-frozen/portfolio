@@ -32,7 +32,7 @@ export default function Footer() {
                     </motion.a>
                 ))}
             </div>
-            <p className={styles.copyright}>&copy; {currentYear} Bakhtiyorov. All rights reserved.</p>
+            <p className={styles.copyright}>&copy; {currentYear} www.baxtiyorov.uz  |  All rights reserved.</p>
         </footer>
     );
 }

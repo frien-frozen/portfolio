@@ -8,9 +8,11 @@ interface ProjectCardProps {
     title: string;
     description: string;
     tags: string[];
+    imageUrl?: string | null;
+    link?: string | null;
 }
 
-export default function ProjectCard({ title, description, tags }: ProjectCardProps) {
+export default function ProjectCard({ title, description, tags, imageUrl, link }: ProjectCardProps) {
     const ref = useRef<HTMLDivElement>(null);
 
     const x = useMotionValue(0);
@@ -45,6 +47,73 @@ export default function ProjectCard({ title, description, tags }: ProjectCardPro
         y.set(0);
     };
 
+    const CardContent = () => (
+        <div
+            style={{
+                transform: "translateZ(75px)",
+                transformStyle: "preserve-3d",
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column'
+            }}
+        >
+            <div className={styles.imageContainer}>
+                {imageUrl ? (
+                    <img
+                        src={imageUrl}
+                        alt={title}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0
+                        }}
+                    />
+                ) : (
+                    <>
+                        <div className={styles.overlay} />
+                        <span style={{ fontSize: '3rem', fontWeight: 800, color: 'rgba(255,255,255,0.1)' }}>
+                            {title.charAt(0)}
+                        </span>
+                    </>
+                )}
+            </div>
+            <div className={styles.content}>
+                <h3 className={styles.title}>{title}</h3>
+                <p className={styles.description}>{description}</p>
+                <div className={styles.tags}>
+                    {tags.map((tag) => (
+                        <span key={tag} className={styles.tag}>
+                            {tag}
+                        </span>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+
+    if (link) {
+        return (
+            <a href={link} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block', height: '100%' }}>
+                <motion.div
+                    ref={ref}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                    style={{
+                        rotateY,
+                        rotateX,
+                        transformStyle: "preserve-3d",
+                    }}
+                    className={styles.card}
+                >
+                    <CardContent />
+                </motion.div>
+            </a>
+        );
+    }
+
     return (
         <motion.div
             ref={ref}
@@ -57,30 +126,7 @@ export default function ProjectCard({ title, description, tags }: ProjectCardPro
             }}
             className={styles.card}
         >
-            <div
-                style={{
-                    transform: "translateZ(75px)",
-                    transformStyle: "preserve-3d"
-                }}
-            >
-                <div className={styles.imageContainer}>
-                    <div className={styles.overlay} />
-                    <span style={{ fontSize: '3rem', fontWeight: 800, color: 'rgba(255,255,255,0.1)' }}>
-                        {title.charAt(0)}
-                    </span>
-                </div>
-                <div className={styles.content}>
-                    <h3 className={styles.title}>{title}</h3>
-                    <p className={styles.description}>{description}</p>
-                    <div className={styles.tags}>
-                        {tags.map((tag) => (
-                            <span key={tag} className={styles.tag}>
-                                {tag}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            </div>
+            <CardContent />
         </motion.div>
     );
 }

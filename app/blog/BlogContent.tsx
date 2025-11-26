@@ -27,8 +27,8 @@ interface Post {
     id: number;
     title: string;
     slug: string;
-    createdAt: Date;
-    publishedAt: Date | null;
+    createdAt: string | Date;
+    publishedAt: string | Date | null;
 }
 
 interface BlogContentProps {
@@ -83,11 +83,12 @@ export default function BlogContent({ postsByYear, years }: BlogContentProps) {
                                     <Link href={`/blog/${post.slug}`} className={styles.postLink}>
                                         <span className={styles.postDate}>
                                             {(post.publishedAt ? new Date(post.publishedAt) : new Date(post.createdAt)).toLocaleDateString('en-US', {
-                                                month: 'long',
+                                                month: 'short',
                                                 day: 'numeric'
                                             })}
                                         </span>
                                         <span className={styles.postTitle}>{post.title}</span>
+                                        <span className={styles.arrow}>→</span>
                                     </Link>
                                 </motion.li>
                             ))}

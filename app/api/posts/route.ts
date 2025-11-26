@@ -27,20 +27,35 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
-        const { title, content, excerpt, published, publishedAt } = body;
+        const { title, content, excerpt, published, publishedAt, tags } = body;
 
         // Generate slug from title
-        const slug = title
+        let slug = title
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/(^-|-$)+/g, '');
+
+        // Ensure slug is unique
+        let counter = 1;
+        let originalSlug = slug;
+        while (true) {
+            const existingPost = await prisma.post.findUnique({
+                where: { slug },
+            });
+
+            if (!existingPost) {
+                break;
+            }
+
+            slug = `${originalSlug}-${counter}`;
+            counter++;
+        }
 
         // Create tags if they don't exist
         // This logic is simplified; usually you'd handle tag creation separately or here
         // For now, let's assume tags are just strings in the body, and we need to link them.
         // But Prisma schema has PostTag relation.
         // Let's keep it simple for now: create post without tags first, or handle tags if provided.
-
         const user = await prisma.user.findUnique({
             where: { email: session.user?.email! },
         });
@@ -49,18 +64,38 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
-        const postData: any = {
-            title,
-            slug,
-            content,
-            excerpt,
-            published: published || false,
-            publishedAt: publishedAt ? new Date(publishedAt) : (published ? new Date() : null),
-            authorId: user.id,
-        };
+        // Create post and tags in a transaction
+        const post = await prisma.$transaction(async (tx) => {
+            // Create post
+            const newPost = await tx.post.create({
+                data: {
+                    title,
+                    slug,
+                    content,
+                    excerpt,
+                    published: published || false,
+                    publishedAt: publishedAt ? new Date(publishedAt) : (published ? new Date() : null),
+                    authorId: user.id,
+                },
+            });
 
-        const post = await prisma.post.create({
-            data: postData,
+            // Handle tags
+            if (tags && Array.isArray(tags)) {
+                for (const tagName of tags) {
+                    let tag = await tx.tag.findUnique({ where: { name: tagName } });
+                    if (!tag) {
+                        tag = await tx.tag.create({ data: { name: tagName } });
+                    }
+                    await tx.postTag.create({
+                        data: {
+                            postId: newPost.id,
+                            tagId: tag.id,
+                        },
+                    });
+                }
+            }
+
+            return newPost;
         });
 
         return NextResponse.json(post);

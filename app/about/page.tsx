@@ -43,8 +43,8 @@ export default function About() {
                         and digital experiences for a variety of clients.
                     </p>
                 </div>
-        <h3 style={{ marginTop: '3rem', marginBottom: '1.5rem', fontSize: '1.5rem' }}>Technologies</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1rem' }}>
+                <h3 style={{ marginTop: '3rem', marginBottom: '1.5rem', fontSize: 'clamp(1.2rem, 3vw, 1.5rem)' }}>Technologies</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 140px), 1fr))', gap: '1rem' }}>
                     {technologies.map((tech, index) => (
                         <motion.div
                             key={tech.name}

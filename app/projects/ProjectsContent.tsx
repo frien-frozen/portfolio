@@ -52,6 +52,8 @@ export default function ProjectsContent({ projects }: { projects: Project[] }) {
                                 title={project.title}
                                 description={project.description}
                                 tags={project.techStack.split(',').map(t => t.trim())}
+                                imageUrl={project.imageUrl}
+                                link={project.link}
                             />
                         </motion.div>
                     ))

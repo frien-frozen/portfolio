@@ -75,3 +75,19 @@ model SiteContent {
   key   String @unique
   value String
 }
+
+model Certificate {
+  id        Int      @id @default(autoincrement())
+  title     String
+  date      String
+  imageUrl  String
+  createdAt DateTime @default(now())
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+}

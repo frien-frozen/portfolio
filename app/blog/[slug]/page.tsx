@@ -4,6 +4,7 @@ import { prisma } from '../../../lib/prisma';
 import styles from './blog-post.module.css';
 import { Metadata } from 'next';
 import BlogPostContent from './BlogPostContent';
+import ScrollToTopButton from '../../../components/ScrollToTopButton';
 
 interface Props {
     params: Promise<{ slug: string }>;
@@ -74,7 +75,7 @@ export default async function BlogPostPage({ params }: Props) {
             <nav className={styles.navigation}>
                 {prevPost ? (
                     <Link href={`/blog/${prevPost.slug}`} className={`${styles.navLink} ${styles.prev}`}>
-                        <span className={styles.navLabel}>Previous</span>
+                        <span className={styles.navLabel}>← Previous</span>
                         <span className={styles.navTitle}>{prevPost.title}</span>
                     </Link>
                 ) : (
@@ -82,11 +83,12 @@ export default async function BlogPostPage({ params }: Props) {
                 )}
                 {nextPost && (
                     <Link href={`/blog/${nextPost.slug}`} className={`${styles.navLink} ${styles.next}`}>
-                        <span className={styles.navLabel}>Next</span>
+                        <span className={styles.navLabel}>Next →</span>
                         <span className={styles.navTitle}>{nextPost.title}</span>
                     </Link>
                 )}
             </nav>
+            <ScrollToTopButton />
         </div>
     );
 }

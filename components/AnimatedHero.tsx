@@ -93,7 +93,7 @@ export default function AnimatedHero() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                style={{ zIndex: 2, position: 'relative', maxWidth: '800px' }}
+                style={{ zIndex: 2, position: 'relative', maxWidth: '800px', width: '100%', padding: '0 1rem' }}
             >
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -107,53 +107,85 @@ export default function AnimatedHero() {
                         borderRadius: '50px',
                         color: '#763AF5',
                         marginBottom: '1.5rem',
-                        fontWeight: 500
+                        fontWeight: 500,
+                        fontSize: 'clamp(0.8rem, 2vw, 1rem)'
                     }}
                 >
                     Available for hire
                 </motion.div>
 
-                <h1 className={styles.title} style={{ fontSize: '5rem', lineHeight: 1.1, marginBottom: '1.5rem' }}>
+                <h1 className={styles.title} style={{
+                    fontSize: 'clamp(3rem, 10vw, 5rem)',
+                    lineHeight: 1.1,
+                    marginBottom: '1.5rem',
+                    wordBreak: 'break-word',
+                    maxWidth: '100%'
+                }}>
                     Ismatulloh <br />
+                    {/* SVG Filter for seamless outline */}
+                    <svg style={{ position: 'absolute', width: 0, height: 0 }}>
+                        <defs>
+                            <filter id="neon-outline" x="-50%" y="-50%" width="200%" height="200%">
+                                <feMorphology operator="dilate" radius="2" in="SourceAlpha" result="expanded" />
+
+                                {/* Create the stroke shape */}
+                                <feComposite in="expanded" in2="SourceAlpha" operator="out" result="strokeShape" />
+
+                                {/* Color the stroke white */}
+                                <feFlood floodColor="rgba(255, 255, 255, 0.8)" result="whiteColor" />
+                                <feComposite in="whiteColor" in2="strokeShape" operator="in" result="whiteStroke" />
+
+                                {/* Create the glow (purple) */}
+                                <feFlood floodColor="rgba(118, 58, 245, 0.8)" result="purpleColor" />
+                                <feComposite in="purpleColor" in2="strokeShape" operator="in" result="purpleStroke" />
+                                <feGaussianBlur stdDeviation="10" in="purpleStroke" result="purpleGlow" />
+
+                                {/* Merge glow and stroke */}
+                                <feMerge>
+                                    <feMergeNode in="purpleGlow" />
+                                    <feMergeNode in="whiteStroke" />
+                                </feMerge>
+                            </filter>
+                        </defs>
+                    </svg>
+
                     <span style={{
-                        color: 'rgba(255, 255, 255, 0.05)',
-                        WebkitTextStroke: '2px rgba(255, 255, 255, 0.8)',
-                        textShadow: '0 0 30px rgba(118, 58, 245, 0.5)',
+                        color: 'white', // Source for the filter
+                        filter: 'url(#neon-outline)',
                         display: 'inline-block',
                         position: 'relative',
-                        backdropFilter: 'blur(4px)',
-                        WebkitBackdropFilter: 'blur(4px)',
                     }}>
-                        <span style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            height: '100%',
-                            background: 'linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0.05))',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            filter: 'blur(2px)',
-                            zIndex: -1
-                        }}>
-                            <TextScramble text="Bakhtiyorov" />
-                        </span>
                         <TextScramble text="Bakhtiyorov" />
                     </span>
                 </h1>
 
-                <p className={styles.subtitle} style={{ fontSize: '1.2rem', color: '#ddd', marginBottom: '2.5rem' }}>
+                <p className={styles.subtitle} style={{
+                    fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
+                    color: '#ddd',
+                    marginBottom: '2.5rem',
+                    maxWidth: '100%'
+                }}>
                     Engineer & Digital Artist. Specializing in building exceptional digital experiences.
                 </p>
 
-                <div className={styles.cta} style={{ gap: '1.5rem', alignItems: 'center', justifyContent: 'center' }}>
+                <div className={styles.cta} style={{
+                    gap: '1.5rem',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexWrap: 'wrap'
+                }}>
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                        <Link href="/projects" className={`${styles.button} ${styles.primary}`} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <Link href="/projects" className={`${styles.button} ${styles.primary}`} style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            fontSize: 'clamp(0.9rem, 2vw, 1rem)'
+                        }}>
                             View Projects <ArrowRight size={18} />
                         </Link>
                     </motion.div>
 
-                    <div style={{ display: 'flex', gap: '1rem' }}>
+                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                         {[
                             { icon: Github, href: 'https://github.com/baxt1y0rov' },
                             { icon: Twitter, href: 'https://x.com/ismatullohbakh2' },

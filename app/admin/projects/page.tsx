@@ -49,10 +49,10 @@ export default function ProjectsPage() {
         }
     };
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <div style={{ padding: '2rem' }}>Loading...</div>;
 
     return (
-        <div className={styles.container}>
+        <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h1 className={styles.title}>Projects</h1>
                 <Link href="/admin/projects/new" className={styles.newButton}>
@@ -64,9 +64,14 @@ export default function ProjectsPage() {
             <div className={styles.list}>
                 {projects.map((project) => (
                     <div key={project.id} className={styles.item}>
-                        <div className={styles.info}>
-                            <h2 className={styles.itemTitle}>{project.title}</h2>
-                            <p className={styles.itemMeta}>{project.techStack}</p>
+                        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                            <div style={{ width: '80px', height: '60px', borderRadius: '4px', overflow: 'hidden', background: '#f3f4f6' }}>
+                                <img src={project.imageUrl} alt={project.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            </div>
+                            <div className={styles.info}>
+                                <h2 className={styles.itemTitle}>{project.title}</h2>
+                                <p className={styles.itemMeta}>{project.techStack}</p>
+                            </div>
                         </div>
                         <div className={styles.actions}>
                             <Link href={`/admin/projects/${project.id}`} className={styles.actionButton}>

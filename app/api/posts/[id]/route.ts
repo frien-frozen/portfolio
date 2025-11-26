@@ -7,7 +7,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const { id } = await params;
     try {
         const post = await prisma.post.findUnique({
-            where: { id: parseInt(id) },
+            where: { id: Number(id) },
             include: {
                 tags: { include: { tag: true } },
                 categories: { include: { category: true } },
@@ -32,26 +32,44 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     }
 
     try {
-        const { title, content, excerpt, published, publishedAt } = await request.json();
+        const { title, slug, content, excerpt, published, publishedAt, tags } = await request.json();
 
-        // Generate slug from title
-        const slug = title
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)+/g, '');
+        // Update post and tags in a transaction
+        const post = await prisma.$transaction(async (tx) => {
+            // Update post details
+            const updatedPost = await tx.post.update({
+                where: { id: Number(id) },
+                data: {
+                    title,
+                    slug,
+                    content,
+                    excerpt,
+                    published,
+                    publishedAt: publishedAt ? new Date(publishedAt) : null,
+                },
+            });
 
-        const updateData: any = {
-            title,
-            slug,
-            content,
-            excerpt,
-            published,
-            publishedAt: publishedAt ? new Date(publishedAt) : (published ? new Date() : null),
-        };
+            // Update tags if provided
+            if (tags && Array.isArray(tags)) {
+                // Remove existing tags
+                await tx.postTag.deleteMany({ where: { postId: Number(id) } });
 
-        const post = await prisma.post.update({
-            where: { id: parseInt(id) },
-            data: updateData,
+                // Add new tags
+                for (const tagName of tags) {
+                    let tag = await tx.tag.findUnique({ where: { name: tagName } });
+                    if (!tag) {
+                        tag = await tx.tag.create({ data: { name: tagName } });
+                    }
+                    await tx.postTag.create({
+                        data: {
+                            postId: Number(id),
+                            tagId: tag.id,
+                        },
+                    });
+                }
+            }
+
+            return updatedPost;
         });
 
         return NextResponse.json(post);

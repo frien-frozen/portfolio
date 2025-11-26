@@ -5,6 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
+import Link from '@tiptap/extension-link';
+import TextAlign from '@tiptap/extension-text-align';
+import { TextStyle } from '@tiptap/extension-text-style';
+import Color from '@tiptap/extension-color';
+import Underline from '@tiptap/extension-underline';
 
 interface PostEditorProps {
     initialData?: {
@@ -15,6 +20,7 @@ interface PostEditorProps {
         excerpt?: string | null;
         published: boolean;
         publishedAt?: Date | string | null;
+        tags?: { tag: { name: string } }[];
     };
 }
 
@@ -22,7 +28,7 @@ export default function PostEditor({ initialData }: PostEditorProps) {
     const router = useRouter();
     const [title, setTitle] = useState(initialData?.title || '');
     const [slug, setSlug] = useState(initialData?.slug || '');
-    const [excerpt, setExcerpt] = useState(initialData?.excerpt || '');
+    const [tags, setTags] = useState(initialData?.tags?.map((t: any) => t.tag.name).join(', ') || '');
     const [published, setPublished] = useState(initialData?.published || false);
     const [publishedAt, setPublishedAt] = useState<string>(
         initialData?.publishedAt
@@ -37,14 +43,42 @@ export default function PostEditor({ initialData }: PostEditorProps) {
         extensions: [
             StarterKit,
             Image,
+            Underline,
+            Link.configure({
+                openOnClick: false,
+                HTMLAttributes: {
+                    class: 'text-blue-500 underline',
+                },
+            }),
+            TextAlign.configure({
+                types: ['heading', 'paragraph'],
+            }),
+            TextStyle,
+            Color,
         ],
         content: initialData?.content || '',
         editorProps: {
             attributes: {
-                class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[300px] p-4 border rounded-md',
+                class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[400px] p-4 border rounded-md',
             },
         },
     });
+
+    const setLink = () => {
+        const previousUrl = editor?.getAttributes('link').href;
+        const url = window.prompt('URL', previousUrl);
+
+        if (url === null) {
+            return;
+        }
+
+        if (url === '') {
+            editor?.chain().focus().extendMarkRange('link').unsetLink().run();
+            return;
+        }
+
+        editor?.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+    };
 
     const addImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -76,11 +110,11 @@ export default function PostEditor({ initialData }: PostEditorProps) {
 
         const data = {
             title,
-            slug,
-            excerpt,
+            slug: slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
             content: editor?.getHTML() || '',
             published,
             publishedAt,
+            tags: tags.split(',').map(t => t.trim()).filter(t => t),
         };
 
         try {
@@ -113,66 +147,111 @@ export default function PostEditor({ initialData }: PostEditorProps) {
                 <input
                     type="text"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={(e) => {
+                        setTitle(e.target.value);
+                        if (!initialData) {
+                            setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''));
+                        }
+                    }}
                     style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '1rem' }}
                     required
                 />
             </div>
 
             <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#374151' }}>Slug</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#374151' }}>Tags (comma separated)</label>
                 <input
                     type="text"
-                    value={slug}
-                    onChange={(e) => setSlug(e.target.value)}
+                    value={tags}
+                    onChange={(e) => setTags(e.target.value)}
+                    placeholder="tech, life, coding"
                     style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '1rem' }}
-                    required
-                />
-            </div>
-
-            <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#374151' }}>Excerpt</label>
-                <textarea
-                    value={excerpt}
-                    onChange={(e) => setExcerpt(e.target.value)}
-                    style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid #d1d5db', minHeight: '100px', fontSize: '1rem', fontFamily: 'inherit' }}
                 />
             </div>
 
             <div style={{ marginBottom: '1.5rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: '#374151' }}>Content</label>
 
-                {/* Editor Toolbar */}
+                {/* Gmail-like Toolbar */}
                 <div style={{
                     display: 'flex',
                     flexWrap: 'wrap',
-                    gap: '0.5rem',
+                    gap: '0.25rem',
                     padding: '0.5rem',
-                    background: '#f9fafb',
+                    background: '#f3f4f6',
                     border: '1px solid #d1d5db',
                     borderBottom: 'none',
                     borderTopLeftRadius: '6px',
-                    borderTopRightRadius: '6px'
+                    borderTopRightRadius: '6px',
+                    alignItems: 'center'
                 }}>
-                    <button type="button" onClick={() => editor?.chain().focus().toggleBold().run()} style={{ fontWeight: 'bold', padding: '0.25rem 0.5rem', borderRadius: '4px', background: editor?.isActive('bold') ? '#e5e7eb' : 'transparent' }}>B</button>
-                    <button type="button" onClick={() => editor?.chain().focus().toggleItalic().run()} style={{ fontStyle: 'italic', padding: '0.25rem 0.5rem', borderRadius: '4px', background: editor?.isActive('italic') ? '#e5e7eb' : 'transparent' }}>I</button>
-                    <button type="button" onClick={() => editor?.chain().focus().toggleStrike().run()} style={{ textDecoration: 'line-through', padding: '0.25rem 0.5rem', borderRadius: '4px', background: editor?.isActive('strike') ? '#e5e7eb' : 'transparent' }}>S</button>
-                    <div style={{ width: '1px', background: '#d1d5db', margin: '0 0.25rem' }}></div>
-                    <button type="button" onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()} style={{ padding: '0.25rem 0.5rem', borderRadius: '4px', background: editor?.isActive('heading', { level: 2 }) ? '#e5e7eb' : 'transparent' }}>H2</button>
-                    <button type="button" onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()} style={{ padding: '0.25rem 0.5rem', borderRadius: '4px', background: editor?.isActive('heading', { level: 3 }) ? '#e5e7eb' : 'transparent' }}>H3</button>
-                    <div style={{ width: '1px', background: '#d1d5db', margin: '0 0.25rem' }}></div>
-                    <button type="button" onClick={() => editor?.chain().focus().toggleBulletList().run()} style={{ padding: '0.25rem 0.5rem', borderRadius: '4px', background: editor?.isActive('bulletList') ? '#e5e7eb' : 'transparent' }}>• List</button>
-                    <button type="button" onClick={() => editor?.chain().focus().toggleOrderedList().run()} style={{ padding: '0.25rem 0.5rem', borderRadius: '4px', background: editor?.isActive('orderedList') ? '#e5e7eb' : 'transparent' }}>1. List</button>
-                    <div style={{ width: '1px', background: '#d1d5db', margin: '0 0.25rem' }}></div>
-                    <button type="button" onClick={() => editor?.chain().focus().toggleBlockquote().run()} style={{ padding: '0.25rem 0.5rem', borderRadius: '4px', background: editor?.isActive('blockquote') ? '#e5e7eb' : 'transparent' }}>""</button>
-                    <button type="button" onClick={() => editor?.chain().focus().toggleCodeBlock().run()} style={{ padding: '0.25rem 0.5rem', borderRadius: '4px', background: editor?.isActive('codeBlock') ? '#e5e7eb' : 'transparent' }}>&lt;/&gt;</button>
-                    <div style={{ width: '1px', background: '#d1d5db', margin: '0 0.25rem' }}></div>
+                    {/* History */}
+                    <div style={{ display: 'flex', gap: '2px', marginRight: '8px' }}>
+                        <button type="button" onClick={() => editor?.chain().focus().undo().run()} disabled={!editor?.can().undo()} style={{ padding: '4px 8px', borderRadius: '4px', background: 'transparent', opacity: !editor?.can().undo() ? 0.3 : 1 }}>↩</button>
+                        <button type="button" onClick={() => editor?.chain().focus().redo().run()} disabled={!editor?.can().redo()} style={{ padding: '4px 8px', borderRadius: '4px', background: 'transparent', opacity: !editor?.can().redo() ? 0.3 : 1 }}>↪</button>
+                    </div>
+
+                    <div style={{ width: '1px', height: '20px', background: '#d1d5db', margin: '0 4px' }}></div>
+
+                    {/* Text Style */}
+                    <select
+                        onChange={(e) => {
+                            const level = parseInt(e.target.value);
+                            if (level === 0) editor?.chain().focus().setParagraph().run();
+                            else editor?.chain().focus().toggleHeading({ level: level as any }).run();
+                        }}
+                        style={{ padding: '4px', borderRadius: '4px', border: '1px solid #d1d5db', background: 'white', fontSize: '14px' }}
+                    >
+                        <option value="0">Normal</option>
+                        <option value="1">Heading 1</option>
+                        <option value="2">Heading 2</option>
+                        <option value="3">Heading 3</option>
+                    </select>
+
+                    <div style={{ width: '1px', height: '20px', background: '#d1d5db', margin: '0 4px' }}></div>
+
+                    {/* Formatting */}
+                    <button type="button" onClick={() => editor?.chain().focus().toggleBold().run()} style={{ fontWeight: 'bold', padding: '4px 8px', borderRadius: '4px', background: editor?.isActive('bold') ? '#e5e7eb' : 'transparent' }}>B</button>
+                    <button type="button" onClick={() => editor?.chain().focus().toggleItalic().run()} style={{ fontStyle: 'italic', padding: '4px 8px', borderRadius: '4px', background: editor?.isActive('italic') ? '#e5e7eb' : 'transparent' }}>I</button>
+                    <button type="button" onClick={() => editor?.chain().focus().toggleUnderline().run()} style={{ textDecoration: 'underline', padding: '4px 8px', borderRadius: '4px', background: editor?.isActive('underline') ? '#e5e7eb' : 'transparent' }}>U</button>
+                    <button type="button" onClick={() => editor?.chain().focus().toggleStrike().run()} style={{ textDecoration: 'line-through', padding: '4px 8px', borderRadius: '4px', background: editor?.isActive('strike') ? '#e5e7eb' : 'transparent' }}>S</button>
+
+                    <div style={{ width: '1px', height: '20px', background: '#d1d5db', margin: '0 4px' }}></div>
+
+                    {/* Colors */}
+                    <input
+                        type="color"
+                        onInput={event => editor?.chain().focus().setColor((event.target as HTMLInputElement).value).run()}
+                        value={editor?.getAttributes('textStyle').color || '#000000'}
+                        style={{ width: '30px', height: '30px', padding: '0', border: 'none', background: 'transparent', cursor: 'pointer' }}
+                        title="Text Color"
+                    />
+
+                    <div style={{ width: '1px', height: '20px', background: '#d1d5db', margin: '0 4px' }}></div>
+
+                    {/* Alignment */}
+                    <button type="button" onClick={() => editor?.chain().focus().setTextAlign('left').run()} style={{ padding: '4px 8px', borderRadius: '4px', background: editor?.isActive({ textAlign: 'left' }) ? '#e5e7eb' : 'transparent' }}>⇤</button>
+                    <button type="button" onClick={() => editor?.chain().focus().setTextAlign('center').run()} style={{ padding: '4px 8px', borderRadius: '4px', background: editor?.isActive({ textAlign: 'center' }) ? '#e5e7eb' : 'transparent' }}>↔</button>
+                    <button type="button" onClick={() => editor?.chain().focus().setTextAlign('right').run()} style={{ padding: '4px 8px', borderRadius: '4px', background: editor?.isActive({ textAlign: 'right' }) ? '#e5e7eb' : 'transparent' }}>⇥</button>
+
+                    <div style={{ width: '1px', height: '20px', background: '#d1d5db', margin: '0 4px' }}></div>
+
+                    {/* Lists & Indent */}
+                    <button type="button" onClick={() => editor?.chain().focus().toggleBulletList().run()} style={{ padding: '4px 8px', borderRadius: '4px', background: editor?.isActive('bulletList') ? '#e5e7eb' : 'transparent' }}>• List</button>
+                    <button type="button" onClick={() => editor?.chain().focus().toggleOrderedList().run()} style={{ padding: '4px 8px', borderRadius: '4px', background: editor?.isActive('orderedList') ? '#e5e7eb' : 'transparent' }}>1. List</button>
+
+                    <div style={{ width: '1px', height: '20px', background: '#d1d5db', margin: '0 4px' }}></div>
+
+                    {/* Insert */}
+                    <button type="button" onClick={setLink} style={{ padding: '4px 8px', borderRadius: '4px', background: editor?.isActive('link') ? '#e5e7eb' : 'transparent' }}>🔗</button>
+                    <button type="button" onClick={() => editor?.chain().focus().toggleBlockquote().run()} style={{ padding: '4px 8px', borderRadius: '4px', background: editor?.isActive('blockquote') ? '#e5e7eb' : 'transparent' }}>""</button>
+                    <button type="button" onClick={() => editor?.chain().focus().toggleCodeBlock().run()} style={{ padding: '4px 8px', borderRadius: '4px', background: editor?.isActive('codeBlock') ? '#e5e7eb' : 'transparent' }}>&lt;/&gt;</button>
                     <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        style={{ padding: '0.25rem 0.5rem', borderRadius: '4px', background: 'transparent', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                        style={{ padding: '4px 8px', borderRadius: '4px', background: 'transparent', display: 'flex', alignItems: 'center', gap: '4px' }}
                     >
-                        <span>🖼️ Image</span>
+                        <span>🖼️</span>
                     </button>
                     <input
                         type="file"
@@ -245,6 +324,6 @@ export default function PostEditor({ initialData }: PostEditorProps) {
                     Cancel
                 </button>
             </div>
-        </form>
+        </form >
     );
 }

@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../lib/auth';
+import { put } from '@vercel/blob';
 import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
-import sharp from 'sharp';
-import { v4 as uuidv4 } from 'uuid';
+import { join } from 'path';
 
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
@@ -20,28 +19,37 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
         }
 
-        const buffer = Buffer.from(await file.arrayBuffer());
-        const filename = `${uuidv4()}.webp`;
-        const uploadDir = path.join(process.cwd(), 'public/uploads');
-
-        // Ensure upload directory exists
-        try {
-            await mkdir(uploadDir, { recursive: true });
-        } catch (e) {
-            // Ignore if exists
+        // Try Vercel Blob first if token exists
+        if (process.env.BLOB_READ_WRITE_TOKEN) {
+            try {
+                const blob = await put(file.name, file, {
+                    access: 'public',
+                });
+                return NextResponse.json({ url: blob.url });
+            } catch (blobError) {
+                console.warn('Vercel Blob upload failed, falling back to local storage:', blobError);
+            }
         }
 
-        const filepath = path.join(uploadDir, filename);
+        // Fallback to local storage
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
 
-        // Optimize image
-        await sharp(buffer)
-            .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
-            .webp({ quality: 80 })
-            .toFile(filepath);
+        // Create unique filename
+        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+        const filename = `${uniqueSuffix}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+        const uploadDir = join(process.cwd(), 'public', 'uploads');
+
+        // Ensure directory exists
+        await mkdir(uploadDir, { recursive: true });
+
+        const filepath = join(uploadDir, filename);
+        await writeFile(filepath, buffer);
 
         return NextResponse.json({ url: `/uploads/${filename}` });
+
     } catch (error) {
-        console.error(error);
+        console.error('Upload error:', error);
         return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
     }
 }

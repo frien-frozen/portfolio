@@ -16,6 +16,8 @@ interface Project {
     title: string;
     description: string;
     techStack: string;
+    imageUrl?: string | null;
+    link?: string | null;
 }
 
 interface Post {
@@ -23,6 +25,7 @@ interface Post {
     title: string;
     slug: string;
     excerpt: string | null;
+    content: string;
     createdAt: Date;
 }
 
@@ -89,17 +92,32 @@ export default function HomeContent({ projects, posts }: { projects: Project[], 
                 <h2 className={styles.sectionTitle}>Latest Posts</h2>
                 <div className={styles.grid}>
                     {posts.length > 0 ? (
-                        posts.map((post) => (
-                            <Link key={post.id} href={`/blog/${post.slug}`} style={{ textDecoration: 'none' }}>
-                                <motion.div className={styles.card} whileHover={{ y: -10 }}>
-                                    <h3>{post.title}</h3>
-                                    <p>{post.excerpt || 'Read more...'}</p>
-                                    <div style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#888' }}>
-                                        {new Date(post.createdAt).toLocaleDateString()}
-                                    </div>
-                                </motion.div>
-                            </Link>
-                        ))
+                        posts.map((post) => {
+                            // Strip HTML and truncate to 50 words
+                            const plainText = post.content ? post.content.replace(/<[^>]+>/g, '') : '';
+                            const words = plainText.split(/\s+/);
+                            const truncated = words.length > 50 ? words.slice(0, 50).join(' ') + '...' : plainText;
+
+                            return (
+                                <Link key={post.id} href={`/blog/${post.slug}`} style={{ textDecoration: 'none' }}>
+                                    <motion.div className={styles.card} whileHover={{ y: -10 }}>
+                                        <h3>{post.title}</h3>
+                                        <p style={{
+                                            wordBreak: 'break-word',
+                                            overflow: 'hidden',
+                                            display: '-webkit-box',
+                                            WebkitLineClamp: 3,
+                                            WebkitBoxOrient: 'vertical',
+                                            lineHeight: '1.5',
+                                            maxHeight: '4.5em' // Fallback
+                                        }}>{truncated || 'Read more...'}</p>
+                                        <div style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#888' }}>
+                                            {new Date(post.createdAt).toLocaleDateString()}
+                                        </div>
+                                    </motion.div>
+                                </Link>
+                            );
+                        })
                     ) : (
                         <motion.div className={styles.card} whileHover={{ y: -10 }}>
                             <h3>Coming Soon</h3>

@@ -1,15 +1,17 @@
 .container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 4rem 2rem;
+    padding: 4rem 1.5rem;
     padding-top: 140px;
-    /* Increased top padding */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .title {
-    font-size: 3rem;
+    font-size: clamp(2rem, 6vw, 3rem);
     font-weight: 800;
     margin-bottom: 2rem;
+    word-break: break-word;
 }
 
 .content {
@@ -36,13 +38,14 @@
 }
 
 .sectionTitle {
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
     font-weight: 700;
     margin-bottom: 3rem;
     color: var(--foreground);
     display: flex;
     align-items: center;
     gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .sectionTitle::after {
