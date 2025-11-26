@@ -1,0 +1,231 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    padding-top: 140px;
+    /* Increased top padding */
+}
+
+.title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+}
+
+.content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #ccc;
+}
+
+.content p {
+    margin-bottom: 1.5rem;
+}
+
+.con.text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #ccc;
+    margin-bottom: 1.5rem;
+}
+
+/* Experience Section */
+.experienceSection {
+    margin-top: 6rem;
+    margin-bottom: 6rem;
+}
+
+.sectionTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 3rem;
+    color: var(--foreground);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.sectionTitle::after {
+    content: "";
+    display: block;
+    height: 1px;
+    width: 200px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.tabsContainer {
+    display: flex;
+    gap: 4rem;
+}
+
+.tabList {
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    flex-shrink: 0;
+    border-left: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.tabButton {
+    background: transparent;
+    border: none;
+    text-align: left;
+    padding: 1rem 1.5rem;
+    color: #888;
+    font-family: inherit;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    margin-left: -2px;
+    border-left: 2px solid transparent;
+}
+
+.tabButton:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ccc;
+}
+
+.activeTab {
+    color: #763AF5;
+    background: rgba(118, 58, 245, 0.05);
+    border-left-color: #763AF5;
+}
+
+.tabContent {
+    flex: 1;
+    min-height: 300px;
+}
+
+.role {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--foreground);
+}
+
+.companyName {
+    color: #763AF5;
+}
+
+.companyName a {
+    color: #763AF5;
+    text-decoration: none;
+    position: relative;
+}
+
+.companyName a::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    background-color: #763AF5;
+    transition: width 0.2s;
+}
+
+.companyName a:hover::after {
+    width: 100%;
+}
+
+.date {
+    font-family: var(--font-geist-mono);
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 1.5rem;
+}
+
+.description {
+    color: #ccc;
+    line-height: 1.6;
+    font-size: 1.05rem;
+    max-width: 600px;
+}
+
+/* CTA Section */
+.ctaSection {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    justify-content: center;
+}
+
+.ctaButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+
+.primaryButton {
+    background: #763AF5;
+    color: white;
+    border: 1px solid #763AF5;
+}
+
+.primaryButton:hover {
+    background: #6025d9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(118, 58, 245, 0.3);
+}
+
+.secondaryButton {
+    background: transparent;
+    color: var(--foreground);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.secondaryButton:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .tabsContainer {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .tabList {
+        flex-direction: row;
+        width: 100%;
+        overflow-x: auto;
+        border-left: none;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 0;
+    }
+
+    .tabButton {
+        border-left: none;
+        border-bottom: 2px solid transparent;
+        margin-left: 0;
+        margin-bottom: -2px;
+        white-space: nowrap;
+        padding: 1rem;
+    }
+
+    .activeTab {
+        border-bottom-color: #763AF5;
+    }
+
+    .sectionTitle::after {
+        display: none;
+    }
+
+    .ctaSection {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .ctaButton {
+        width: 100%;
+        justify-content: center;
+    }
+}

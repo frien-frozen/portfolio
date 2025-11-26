@@ -1,0 +1,143 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 8rem 2rem 4rem;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--foreground) 0%, #cbb2ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #888;
+    margin-bottom: 4rem;
+    font-weight: 400;
+}
+
+.yearSection {
+    margin-bottom: 4rem;
+}
+
+.yearTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--foreground);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e5e7eb;
+    letter-spacing: -0.01em;
+}
+
+.postList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.postItem {
+    margin-bottom: 0;
+    border-bottom: 1px solid #f3f4f6;
+    transition: background 0.2s ease;
+}
+
+.postItem:last-child {
+    border-bottom: none;
+}
+
+.postItem:hover {
+    background: #fafafa;
+}
+
+.postLink {
+    display: flex;
+    align-items: baseline;
+    gap: 2rem;
+    padding: 1.25rem 1rem;
+    text-decoration: none;
+    color: var(--foreground);
+    transition: all 0.2s ease;
+}
+
+.postLink:hover {
+    color: #763AF5;
+    padding-left: 1.5rem;
+}
+
+.postLink:hover .postTitle {
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+}
+
+.postDate {
+    flex-shrink: 0;
+    width: 150px;
+    font-size: 0.95rem;
+    color: #999;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
+.postTitle {
+    flex: 1;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #999;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 5rem 1.5rem 3rem;
+    }
+
+    .title {
+        font-size: 2.5rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+        margin-bottom: 3rem;
+    }
+
+    .yearTitle {
+        font-size: 1.25rem;
+    }
+
+    .postLink {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+        padding: 1rem 0.75rem;
+    }
+
+    .postLink:hover {
+        padding-left: 0.75rem;
+    }
+
+    .postDate {
+        width: auto;
+        font-size: 0.85rem;
+        color: #aaa;
+    }
+
+    .postTitle {
+        font-size: 1rem;
+    }
+}
