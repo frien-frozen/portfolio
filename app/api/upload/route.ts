@@ -28,7 +28,9 @@ export async function POST(request: Request) {
                 return NextResponse.json({ url: blob.url });
             } catch (blobError) {
                 console.error('Vercel Blob upload failed:', blobError);
-                return NextResponse.json({ error: 'Vercel Blob upload failed' }, { status: 500 });
+                return NextResponse.json({
+                    error: `Vercel Blob upload failed: ${blobError instanceof Error ? blobError.message : 'Unknown error'}`
+                }, { status: 500 });
             }
         }
 
