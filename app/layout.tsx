@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   title: "Bakhtiyorov's Portfolio",
   description: "Personal portfolio and blog",
   icons: {
-    icon: '/profile.png',
+    icon: '/favicon.ico',
   },
 };
 
