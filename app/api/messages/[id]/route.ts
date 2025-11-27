@@ -5,22 +5,24 @@ import { authOptions } from '@/lib/auth';
 
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     try {
-        const id = parseInt(params.id);
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const { id: idStr } = await params;
+        const id = parseInt(idStr);
+
         await prisma.message.delete({
-            where: { id },
+            where: { id }
         });
 
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Error deleting message:', error);
-        return NextResponse.json({ error: 'Error deleting message' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to delete message' }, { status: 500 });
     }
 }
