@@ -21,6 +21,8 @@ export const metadata: Metadata = {
   description: "Personal portfolio and blog",
   icons: {
     icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
   },
 };
 
