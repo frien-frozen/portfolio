@@ -54,14 +54,19 @@ export default function AdminCertificates() {
                 body: formData,
             });
             const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || 'Upload failed');
+            }
+
             if (data.url) {
                 setImageUrl(data.url);
             } else {
-                alert('Upload failed: No URL returned');
+                throw new Error('No URL returned from server');
             }
         } catch (error) {
             console.error('Error uploading image:', error);
-            alert('Failed to upload image');
+            alert(error instanceof Error ? error.message : 'Failed to upload image');
         } finally {
             setUploading(false);
         }

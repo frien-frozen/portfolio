@@ -41,11 +41,17 @@ export default function ProjectEditor({ initialData }: ProjectEditorProps) {
                 body: formData,
             });
             const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || 'Upload failed');
+            }
+
             if (data.url) {
                 setImageUrl(data.url);
             }
         } catch (error) {
-            alert('Error uploading image');
+            console.error('Error uploading image:', error);
+            alert(error instanceof Error ? error.message : 'Error uploading image');
         } finally {
             setUploading(false);
         }

@@ -27,11 +27,20 @@ export async function POST(request: Request) {
                 });
                 return NextResponse.json({ url: blob.url });
             } catch (blobError) {
-                console.warn('Vercel Blob upload failed, falling back to local storage:', blobError);
+                console.error('Vercel Blob upload failed:', blobError);
+                return NextResponse.json({ error: 'Vercel Blob upload failed' }, { status: 500 });
             }
         }
 
-        // Fallback to local storage
+        // Check if running in production (Vercel)
+        if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+            console.error('BLOB_READ_WRITE_TOKEN is missing in production environment');
+            return NextResponse.json({
+                error: 'Server configuration error: BLOB_READ_WRITE_TOKEN is missing. Please add this environment variable in Vercel settings.'
+            }, { status: 500 });
+        }
+
+        // Fallback to local storage (Development only)
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
 

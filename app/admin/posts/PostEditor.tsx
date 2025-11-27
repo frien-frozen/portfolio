@@ -95,14 +95,18 @@ export default function PostEditor({ initialData }: PostEditorProps) {
                 body: formData,
             });
 
-            if (!res.ok) throw new Error('Upload failed');
-
             const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || 'Upload failed');
+            }
+
             if (data.url) {
                 editor?.chain().focus().setImage({ src: data.url }).run();
             }
         } catch (error) {
-            alert('Failed to upload image');
+            console.error('Error uploading image:', error);
+            alert(error instanceof Error ? error.message : 'Failed to upload image');
         } finally {
             setUploading(false);
         }
