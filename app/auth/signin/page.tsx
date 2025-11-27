@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import styles from './signin.module.css';
 
 export default function SignIn() {
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const router = useRouter();
@@ -16,13 +16,13 @@ export default function SignIn() {
         setError('');
 
         const res = await signIn('credentials', {
-            email,
+            username,
             password,
             redirect: false,
         });
 
         if (res?.error) {
-            setError('Invalid email or password');
+            setError('Invalid username or password');
         } else {
             router.push('/admin');
             router.refresh();
@@ -32,19 +32,28 @@ export default function SignIn() {
     return (
         <div className={styles.container}>
             <div className={styles.card}>
-                <h1 className={styles.title}>Admin Login</h1>
+                <h1 className={styles.title}>Welcome Back</h1>
+                <p className={styles.subtitle}>Sign in to access the dashboard</p>
+
                 <form onSubmit={handleSubmit} className={styles.form}>
-                    {error && <p className={styles.error}>{error}</p>}
+                    {error && (
+                        <div className={styles.errorContainer}>
+                            <p className={styles.error}>{error}</p>
+                        </div>
+                    )}
+
                     <div className={styles.group}>
-                        <label className={styles.label}>Email</label>
+                        <label className={styles.label}>Username</label>
                         <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                             className={styles.input}
+                            placeholder="Enter your username"
                             required
                         />
                     </div>
+
                     <div className={styles.group}>
                         <label className={styles.label}>Password</label>
                         <input
@@ -52,9 +61,11 @@ export default function SignIn() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className={styles.input}
+                            placeholder="Enter your password"
                             required
                         />
                     </div>
+
                     <button type="submit" className={styles.button}>
                         Sign In
                     </button>
