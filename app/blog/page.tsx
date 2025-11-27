@@ -6,6 +6,8 @@ export const metadata = {
     description: 'Thoughts on development, design, and technology.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function BlogPage() {
     const posts = await prisma.post.findMany({
         where: { published: true },

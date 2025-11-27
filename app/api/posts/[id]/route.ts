@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '../../../../lib/prisma';
 import { authOptions } from '../../../../lib/auth';
+import { revalidatePath } from 'next/cache';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -72,6 +73,11 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
             return updatedPost;
         });
 
+        revalidatePath('/');
+        revalidatePath('/blog');
+        revalidatePath('/admin/posts');
+        revalidatePath(`/blog/${post.slug}`);
+
         return NextResponse.json(post);
     } catch (error) {
         console.error('Error updating post:', error);
@@ -93,6 +99,10 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
         await prisma.post.delete({
             where: { id: parseInt(id) },
         });
+
+        revalidatePath('/');
+        revalidatePath('/blog');
+        revalidatePath('/admin/posts');
 
         return NextResponse.json({ message: 'Post deleted' });
     } catch (error) {

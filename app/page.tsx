@@ -3,6 +3,8 @@ import HomeContent from './HomeContent';
 import styles from './page.module.css';
 import { prisma } from '../lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   // Fetch published projects and posts
   const projects = await prisma.project.findMany({

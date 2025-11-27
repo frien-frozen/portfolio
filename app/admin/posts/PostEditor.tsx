@@ -36,6 +36,7 @@ export default function PostEditor({ initialData }: PostEditorProps) {
             : new Date().toISOString().split('T')[0]
     );
     const [saving, setSaving] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const editor = useEditor({
@@ -84,6 +85,7 @@ export default function PostEditor({ initialData }: PostEditorProps) {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        setUploading(true);
         const formData = new FormData();
         formData.append('file', file);
 
@@ -101,6 +103,8 @@ export default function PostEditor({ initialData }: PostEditorProps) {
             }
         } catch (error) {
             alert('Failed to upload image');
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -248,10 +252,35 @@ export default function PostEditor({ initialData }: PostEditorProps) {
                     <button type="button" onClick={() => editor?.chain().focus().toggleCodeBlock().run()} style={{ padding: '4px 8px', borderRadius: '4px', background: editor?.isActive('codeBlock') ? '#e5e7eb' : 'transparent' }}>&lt;/&gt;</button>
                     <button
                         type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        style={{ padding: '4px 8px', borderRadius: '4px', background: 'transparent', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        onClick={() => !uploading && fileInputRef.current?.click()}
+                        disabled={uploading}
+                        style={{
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            background: 'transparent',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            cursor: uploading ? 'wait' : 'pointer',
+                            opacity: uploading ? 0.5 : 1
+                        }}
+                        title={uploading ? "Uploading..." : "Insert Image"}
                     >
-                        <span>🖼️</span>
+                        {uploading ? (
+                            <>
+                                <div style={{
+                                    width: '14px',
+                                    height: '14px',
+                                    border: '2px solid #374151',
+                                    borderTopColor: 'transparent',
+                                    borderRadius: '50%',
+                                    animation: 'spin 1s linear infinite'
+                                }}></div>
+                                <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+                            </>
+                        ) : (
+                            <span>🖼️</span>
+                        )}
                     </button>
                     <input
                         type="file"

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '../../../lib/prisma';
 import { authOptions } from '../../../lib/auth';
+import { revalidatePath } from 'next/cache';
 
 export async function GET() {
     try {
@@ -51,11 +52,6 @@ export async function POST(request: Request) {
             counter++;
         }
 
-        // Create tags if they don't exist
-        // This logic is simplified; usually you'd handle tag creation separately or here
-        // For now, let's assume tags are just strings in the body, and we need to link them.
-        // But Prisma schema has PostTag relation.
-        // Let's keep it simple for now: create post without tags first, or handle tags if provided.
         const user = await prisma.user.findUnique({
             where: { email: session.user?.email! },
         });
@@ -97,6 +93,10 @@ export async function POST(request: Request) {
 
             return newPost;
         });
+
+        revalidatePath('/');
+        revalidatePath('/blog');
+        revalidatePath('/admin/posts');
 
         return NextResponse.json(post);
     } catch (error) {
