@@ -12,42 +12,8 @@ interface ProjectCardProps {
     link?: string | null;
 }
 
-export default function ProjectCard({ title, description, tags, imageUrl, link }: ProjectCardProps) {
-    const ref = useRef<HTMLDivElement>(null);
-
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-
-    const mouseXSpring = useSpring(x);
-    const mouseYSpring = useSpring(y);
-
-    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["17.5deg", "-17.5deg"]);
-    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-17.5deg", "17.5deg"]);
-
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        const rect = ref.current?.getBoundingClientRect();
-
-        if (rect) {
-            const width = rect.width;
-            const height = rect.height;
-
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-
-            const xPct = mouseX / width - 0.5;
-            const yPct = mouseY / height - 0.5;
-
-            x.set(xPct);
-            y.set(yPct);
-        }
-    };
-
-    const handleMouseLeave = () => {
-        x.set(0);
-        y.set(0);
-    };
-
-    const CardContent = () => (
+function CardContent({ title, description, tags, imageUrl }: { title: string, description: string, tags: string[], imageUrl?: string | null }) {
+    return (
         <div
             style={{
                 transform: "translateZ(75px)",
@@ -93,6 +59,42 @@ export default function ProjectCard({ title, description, tags, imageUrl, link }
             </div>
         </div>
     );
+}
+
+export default function ProjectCard({ title, description, tags, imageUrl, link }: ProjectCardProps) {
+    const ref = useRef<HTMLDivElement>(null);
+
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+
+    const mouseXSpring = useSpring(x);
+    const mouseYSpring = useSpring(y);
+
+    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["17.5deg", "-17.5deg"]);
+    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-17.5deg", "17.5deg"]);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = ref.current?.getBoundingClientRect();
+
+        if (rect) {
+            const width = rect.width;
+            const height = rect.height;
+
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            const xPct = mouseX / width - 0.5;
+            const yPct = mouseY / height - 0.5;
+
+            x.set(xPct);
+            y.set(yPct);
+        }
+    };
+
+    const handleMouseLeave = () => {
+        x.set(0);
+        y.set(0);
+    };
 
     if (link) {
         return (
@@ -108,7 +110,7 @@ export default function ProjectCard({ title, description, tags, imageUrl, link }
                     }}
                     className={styles.card}
                 >
-                    <CardContent />
+                    <CardContent title={title} description={description} tags={tags} imageUrl={imageUrl} />
                 </motion.div>
             </a>
         );
@@ -126,7 +128,7 @@ export default function ProjectCard({ title, description, tags, imageUrl, link }
             }}
             className={styles.card}
         >
-            <CardContent />
+            <CardContent title={title} description={description} tags={tags} imageUrl={imageUrl} />
         </motion.div>
     );
 }

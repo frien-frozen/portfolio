@@ -14,7 +14,6 @@ export default function Footer() {
         { icon: Send, href: "https://t.me/baxt1y0rov" }, // Telegram
         { icon: Instagram, href: "https://www.instagram.com/bakkhtiyoroff" }
     ];
-
     return (
         <footer className={styles.footer}>
             <div className={styles.socials}>

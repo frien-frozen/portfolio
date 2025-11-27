@@ -3,7 +3,15 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-export default function PostList({ posts }: { posts: any[] }) {
+interface Post {
+    id: number;
+    title: string;
+    published: boolean;
+    publishedAt?: string | Date | null;
+    createdAt: string | Date;
+}
+
+export default function PostList({ posts }: { posts: Post[] }) {
     const router = useRouter();
 
     const handleDelete = async (id: number) => {

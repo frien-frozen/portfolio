@@ -81,6 +81,7 @@ model Certificate {
   title     String
   date      String
   imageUrl  String
+  order     Int      @default(0)
   createdAt DateTime @default(now())
 }
 

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink } from 'lucide-react';
 import styles from './page.module.css';
 
 const experiences = [
@@ -58,7 +57,7 @@ export default function ExperienceSection() {
                 transition={{ duration: 0.5 }}
                 viewport={{ once: true }}
             >
-                Where I've Worked
+                Where I&apos;ve Worked
             </motion.h2>
 
             <div className={styles.tabsContainer}>

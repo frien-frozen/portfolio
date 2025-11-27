@@ -6,9 +6,10 @@ import { authOptions } from '@/lib/auth';
 export async function GET() {
     try {
         const certificates = await prisma.certificate.findMany({
-            orderBy: {
-                date: 'desc',
-            },
+            orderBy: [
+                { order: 'asc' },
+                { date: 'desc' },
+            ],
         });
         return NextResponse.json(certificates);
     } catch (error) {

@@ -37,8 +37,9 @@ export async function POST(request: Request) {
             .replace(/(^-|-$)+/g, '');
 
         // Ensure slug is unique
+        // Ensure slug is unique
         let counter = 1;
-        let originalSlug = slug;
+        const originalSlug = slug;
         while (true) {
             const existingPost = await prisma.post.findUnique({
                 where: { slug },
@@ -52,8 +53,12 @@ export async function POST(request: Request) {
             counter++;
         }
 
+        if (!session.user?.email) {
+            return NextResponse.json({ error: 'User email not found' }, { status: 400 });
+        }
+
         const user = await prisma.user.findUnique({
-            where: { email: session.user?.email! },
+            where: { email: session.user.email },
         });
 
         if (!user) {

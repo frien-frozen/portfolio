@@ -1,6 +1,5 @@
 'use client';
 
-import Image from "next/image";
 import Link from "next/link";
 import styles from './page.module.css';
 import { motion } from 'framer-motion';
@@ -30,7 +29,7 @@ export default function About() {
             <div className={styles.content}>
                 <div className={styles.bio}>
                     <p className={styles.text}>
-                        Hello! I'm Ismatulloh, a passionate software engineer and digital artist based in Uzbekistan.
+                        Hello! I&apos;m Ismatulloh, a passionate software engineer and digital artist based in Uzbekistan.
                         I enjoy creating things that live on the internet, whether that be websites, applications, or digital art.
                     </p>
                     <p className={styles.text}>
@@ -38,7 +37,7 @@ export default function About() {
                         turns out hacking together HTML & CSS is pretty fun!
                     </p>
                     <p className={styles.text}>
-                        Fast-forward to today, and I've had the privilege of working at an advertising agency, a start-up,
+                        Fast-forward to today, and I&apos;ve had the privilege of working at an advertising agency, a start-up,
                         and a student-led design studio. My main focus these days is building accessible, inclusive products
                         and digital experiences for a variety of clients.
                     </p>

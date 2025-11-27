@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { Trash2, ImageIcon, Calendar, Type } from 'lucide-react';
 import styles from '../admin.module.css';
 
@@ -16,7 +16,6 @@ export default function AdminCertificates() {
     const [certificates, setCertificates] = useState<Certificate[]>([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
-    const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Form state
@@ -24,6 +23,8 @@ export default function AdminCertificates() {
     const [date, setDate] = useState('');
     const [imageUrl, setImageUrl] = useState('');
     const [editingId, setEditingId] = useState<number | null>(null);
+    const [isDraggingFile, setIsDraggingFile] = useState(false);
+    const [draggedItem, setDraggedItem] = useState<Certificate | null>(null);
 
     useEffect(() => {
         fetchCertificates();
@@ -41,8 +42,7 @@ export default function AdminCertificates() {
         }
     };
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
+    const handleImageUpload = async (file: File) => {
         if (!file) return;
 
         setUploading(true);
@@ -77,6 +77,30 @@ export default function AdminCertificates() {
             alert(error instanceof Error ? error.message : 'Failed to upload image');
         } finally {
             setUploading(false);
+        }
+    };
+
+    const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) handleImageUpload(file);
+    };
+
+    const onDragOverFile = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDraggingFile(true);
+    };
+
+    const onDragLeaveFile = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDraggingFile(false);
+    };
+
+    const onDropFile = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDraggingFile(false);
+        const file = e.dataTransfer.files?.[0];
+        if (file && file.type.startsWith('image/')) {
+            handleImageUpload(file);
         }
     };
 
@@ -149,6 +173,44 @@ export default function AdminCertificates() {
         }
     };
 
+    // List Reordering Handlers
+    const onDragStartItem = (e: React.DragEvent, index: number) => {
+        setDraggedItem(certificates[index]);
+        e.dataTransfer.effectAllowed = 'move';
+        // Set a transparent drag image or custom styling if needed
+    };
+
+    const onDragOverItem = (e: React.DragEvent, index: number) => {
+        e.preventDefault();
+        const draggedOverItem = certificates[index];
+
+        if (draggedItem === draggedOverItem) return;
+
+        const items = certificates.filter(item => item !== draggedItem);
+        items.splice(index, 0, draggedItem!);
+        setCertificates(items);
+    };
+
+    const onDragEndItem = async () => {
+        setDraggedItem(null);
+
+        // Save new order to server
+        try {
+            const itemsWithOrder = certificates.map((item, index) => ({
+                id: item.id,
+                order: index
+            }));
+
+            await fetch('/api/certificates/reorder', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items: itemsWithOrder }),
+            });
+        } catch (error) {
+            console.error('Error saving order:', error);
+        }
+    };
+
     if (loading) return <div style={{ padding: '2rem' }}>Loading...</div>;
 
     return (
@@ -211,7 +273,7 @@ export default function AdminCertificates() {
                             style={{
                                 width: '100%',
                                 height: '200px',
-                                border: '2px dashed #d1d5db',
+                                border: isDraggingFile ? '2px dashed #3b82f6' : '2px dashed #d1d5db',
                                 borderRadius: '6px',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -219,15 +281,18 @@ export default function AdminCertificates() {
                                 cursor: 'pointer',
                                 overflow: 'hidden',
                                 position: 'relative',
-                                background: imageUrl ? `url(${imageUrl}) center/cover no-repeat` : '#f9fafb',
+                                background: imageUrl ? `url(${imageUrl}) center/cover no-repeat` : (isDraggingFile ? '#eff6ff' : '#f9fafb'),
                                 transition: 'all 0.2s'
                             }}
                             onClick={() => fileInputRef.current?.click()}
+                            onDragOver={onDragOverFile}
+                            onDragLeave={onDragLeaveFile}
+                            onDrop={onDropFile}
                         >
                             {!imageUrl && (
-                                <div style={{ textAlign: 'center', color: '#6b7280' }}>
+                                <div style={{ textAlign: 'center', color: isDraggingFile ? '#3b82f6' : '#6b7280' }}>
                                     <ImageIcon size={32} style={{ marginBottom: '0.5rem' }} />
-                                    <p style={{ fontSize: '0.9rem' }}>Click to upload</p>
+                                    <p style={{ fontSize: '0.9rem' }}>{isDraggingFile ? 'Drop image here' : 'Click or Drag to upload'}</p>
                                 </div>
                             )}
                             {uploading && (
@@ -239,7 +304,7 @@ export default function AdminCertificates() {
                         <input
                             type="file"
                             ref={fileInputRef}
-                            onChange={handleImageUpload}
+                            onChange={onFileChange}
                             accept="image/*"
                             style={{ display: 'none' }}
                         />
@@ -268,9 +333,20 @@ export default function AdminCertificates() {
 
             {/* Certificates List */}
             <div className={styles.list}>
-                {certificates.map((cert) => (
-                    <div key={cert.id} className={styles.item}>
-                        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                {certificates.map((cert, index) => (
+                    <div
+                        key={cert.id}
+                        className={styles.item}
+                        draggable
+                        onDragStart={(e) => onDragStartItem(e, index)}
+                        onDragOver={(e) => onDragOverItem(e, index)}
+                        onDragEnd={onDragEndItem}
+                        style={{ cursor: 'move', opacity: draggedItem === cert ? 0.5 : 1 }}
+                    >
+                        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flex: 1 }}>
+                            <div style={{ color: '#9ca3af', cursor: 'grab' }} title="Drag to reorder">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle></svg>
+                            </div>
                             <div style={{ width: '80px', height: '60px', borderRadius: '4px', overflow: 'hidden', background: '#f3f4f6' }}>
                                 <img src={cert.imageUrl} alt={cert.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             </div>

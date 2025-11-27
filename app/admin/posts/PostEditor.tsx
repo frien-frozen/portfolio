@@ -28,7 +28,7 @@ export default function PostEditor({ initialData }: PostEditorProps) {
     const router = useRouter();
     const [title, setTitle] = useState(initialData?.title || '');
     const [slug, setSlug] = useState(initialData?.slug || '');
-    const [tags, setTags] = useState(initialData?.tags?.map((t: any) => t.tag.name).join(', ') || '');
+    const [tags, setTags] = useState(initialData?.tags?.map((t: { tag: { name: string } }) => t.tag.name).join(', ') || '');
     const [published, setPublished] = useState(initialData?.published || false);
     const [publishedAt, setPublishedAt] = useState<string>(
         initialData?.publishedAt
@@ -213,7 +213,7 @@ export default function PostEditor({ initialData }: PostEditorProps) {
                         onChange={(e) => {
                             const level = parseInt(e.target.value);
                             if (level === 0) editor?.chain().focus().setParagraph().run();
-                            else editor?.chain().focus().toggleHeading({ level: level as any }).run();
+                            else editor?.chain().focus().toggleHeading({ level: level as 1 | 2 | 3 }).run();
                         }}
                         style={{ padding: '4px', borderRadius: '4px', border: '1px solid #d1d5db', background: 'white', fontSize: '14px' }}
                     >
@@ -259,7 +259,7 @@ export default function PostEditor({ initialData }: PostEditorProps) {
 
                     {/* Insert */}
                     <button type="button" onClick={setLink} style={{ padding: '4px 8px', borderRadius: '4px', background: editor?.isActive('link') ? '#e5e7eb' : 'transparent' }}>🔗</button>
-                    <button type="button" onClick={() => editor?.chain().focus().toggleBlockquote().run()} style={{ padding: '4px 8px', borderRadius: '4px', background: editor?.isActive('blockquote') ? '#e5e7eb' : 'transparent' }}>""</button>
+                    <button type="button" onClick={() => editor?.chain().focus().toggleBlockquote().run()} style={{ padding: '4px 8px', borderRadius: '4px', background: editor?.isActive('blockquote') ? '#e5e7eb' : 'transparent' }}>&quot;&quot;</button>
                     <button type="button" onClick={() => editor?.chain().focus().toggleCodeBlock().run()} style={{ padding: '4px 8px', borderRadius: '4px', background: editor?.isActive('codeBlock') ? '#e5e7eb' : 'transparent' }}>&lt;/&gt;</button>
                     <button
                         type="button"

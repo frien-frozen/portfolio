@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Download, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -50,6 +50,32 @@ export default function CertificatesPage() {
             });
     }, []);
 
+    const closePreview = useCallback(() => {
+        setSelectedIndex(null);
+    }, []);
+
+    const goToPrevious = useCallback(() => {
+        if (selectedIndex === null) return;
+        setSelectedIndex((prev) => (prev === null ? null : (prev - 1 + certificates.length) % certificates.length));
+    }, [selectedIndex, certificates.length]);
+
+    const goToNext = useCallback(() => {
+        if (selectedIndex === null) return;
+        setSelectedIndex((prev) => (prev === null ? null : (prev + 1) % certificates.length));
+    }, [selectedIndex, certificates.length]);
+
+    // Handle body overflow
+    useEffect(() => {
+        if (selectedIndex !== null) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [selectedIndex]);
+
     // Keyboard shortcuts
     useEffect(() => {
         if (selectedIndex === null) return;
@@ -66,26 +92,10 @@ export default function CertificatesPage() {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedIndex, certificates.length]);
+    }, [selectedIndex, certificates.length, closePreview, goToPrevious, goToNext]);
 
     const openPreview = (index: number) => {
         setSelectedIndex(index);
-        document.body.style.overflow = 'hidden';
-    };
-
-    const closePreview = () => {
-        setSelectedIndex(null);
-        document.body.style.overflow = 'auto';
-    };
-
-    const goToPrevious = () => {
-        if (selectedIndex === null) return;
-        setSelectedIndex((selectedIndex - 1 + certificates.length) % certificates.length);
-    };
-
-    const goToNext = () => {
-        if (selectedIndex === null) return;
-        setSelectedIndex((selectedIndex + 1) % certificates.length);
     };
 
     const handleDownload = () => {

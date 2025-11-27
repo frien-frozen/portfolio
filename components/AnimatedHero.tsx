@@ -79,13 +79,7 @@ const codingAnimation = {
 };
 
 export default function AnimatedHero() {
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    if (!mounted) return null;
+    // Removed mounted check to allow SSR for better SEO and performance
 
     return (
         <section className={styles.hero} style={{ position: 'relative', overflow: 'hidden', minHeight: '90vh', marginTop: '-80px' }}>
