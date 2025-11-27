@@ -96,8 +96,22 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     }
 
     try {
-        await prisma.post.delete({
-            where: { id: parseInt(id) },
+        // Delete post and related records in a transaction
+        await prisma.$transaction(async (tx) => {
+            // Delete related tags
+            await tx.postTag.deleteMany({
+                where: { postId: parseInt(id) }
+            });
+
+            // Delete related categories
+            await tx.postCategory.deleteMany({
+                where: { postId: parseInt(id) }
+            });
+
+            // Delete the post
+            await tx.post.delete({
+                where: { id: parseInt(id) },
+            });
         });
 
         revalidatePath('/');
