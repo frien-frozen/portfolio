@@ -10,7 +10,7 @@ export default function Footer() {
     const socialLinks = [
         { icon: Twitter, href: "https://x.com/ismatullohbakh2" },
         { icon: Github, href: "https://github.com/baxt1y0rov" },
-        { icon: Linkedin, href: "https://www.linkedin.com/in/ا%D9%90سْمَةُ-الله-بختيرو-32b661230/" },
+        { icon: Linkedin, href: "https://www.linkedin.com/in/baxtiyorov" },
         { icon: Send, href: "https://t.me/baxt1y0rov" }, // Telegram
         { icon: Instagram, href: "https://www.instagram.com/bakkhtiyoroff" }
     ];

@@ -189,7 +189,7 @@ export default function AnimatedHero() {
                         {[
                             { icon: Github, href: 'https://github.com/baxt1y0rov' },
                             { icon: Twitter, href: 'https://x.com/ismatullohbakh2' },
-                            { icon: Linkedin, href: 'https://www.linkedin.com/in/ا%D9%90سْمَةُ-الله-بختيرو-32b661230/' },
+                            { icon: Linkedin, href: 'https://www.linkedin.com/in/baxtiyorov' },
                             { icon: Mail, href: 'mailto:ismatullohbakh2010@gmail.com' }
                         ].map((item, i) => (
                             <motion.a

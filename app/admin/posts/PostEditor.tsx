@@ -95,7 +95,14 @@ export default function PostEditor({ initialData }: PostEditorProps) {
                 body: formData,
             });
 
-            const data = await res.json();
+            let data;
+            const contentType = res.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                data = await res.json();
+            } else {
+                const text = await res.text();
+                throw new Error(text || `Upload failed with status ${res.status}`);
+            }
 
             if (!res.ok) {
                 throw new Error(data.error || 'Upload failed');

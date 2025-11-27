@@ -23,6 +23,7 @@ export default function AdminCertificates() {
     const [title, setTitle] = useState('');
     const [date, setDate] = useState('');
     const [imageUrl, setImageUrl] = useState('');
+    const [editingId, setEditingId] = useState<number | null>(null);
 
     useEffect(() => {
         fetchCertificates();
@@ -53,7 +54,14 @@ export default function AdminCertificates() {
                 method: 'POST',
                 body: formData,
             });
-            const data = await res.json();
+            let data;
+            const contentType = res.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                data = await res.json();
+            } else {
+                const text = await res.text();
+                throw new Error(text || `Upload failed with status ${res.status}`);
+            }
 
             if (!res.ok) {
                 throw new Error(data.error || 'Upload failed');
@@ -72,6 +80,22 @@ export default function AdminCertificates() {
         }
     };
 
+    const handleEdit = (cert: Certificate) => {
+        setEditingId(cert.id);
+        setTitle(cert.title);
+        setDate(cert.date);
+        setImageUrl(cert.imageUrl);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleCancelEdit = () => {
+        setEditingId(null);
+        setTitle('');
+        setDate('');
+        setImageUrl('');
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -86,24 +110,24 @@ export default function AdminCertificates() {
         }
 
         try {
-            const res = await fetch('/api/certificates', {
-                method: 'POST',
+            const url = editingId ? `/api/certificates/${editingId}` : '/api/certificates';
+            const method = editingId ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method: method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, date, imageUrl }),
             });
 
             if (res.ok) {
                 // Reset form
-                setTitle('');
-                setDate('');
-                setImageUrl('');
-                if (fileInputRef.current) fileInputRef.current.value = '';
+                handleCancelEdit();
                 fetchCertificates();
             } else {
-                alert('Failed to create certificate');
+                alert(`Failed to ${editingId ? 'update' : 'create'} certificate`);
             }
         } catch (error) {
-            console.error('Error creating certificate:', error);
+            console.error(`Error ${editingId ? 'updating' : 'creating'} certificate:`, error);
         }
     };
 
@@ -131,9 +155,22 @@ export default function AdminCertificates() {
         <div>
             <h1 className={styles.title} style={{ marginBottom: '2rem' }}>Manage Certificates</h1>
 
-            {/* Add Certificate Form */}
+            {/* Add/Edit Certificate Form */}
             <form onSubmit={handleSubmit} style={{ background: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '3rem', maxWidth: '800px' }}>
-                <h2 style={{ marginBottom: '1.5rem', fontSize: '1.25rem', fontWeight: 600, color: '#111827' }}>Add New Certificate</h2>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#111827', margin: 0 }}>
+                        {editingId ? 'Edit Certificate' : 'Add New Certificate'}
+                    </h2>
+                    {editingId && (
+                        <button
+                            type="button"
+                            onClick={handleCancelEdit}
+                            style={{ padding: '0.5rem 1rem', background: '#f3f4f6', border: '1px solid #d1d5db', borderRadius: '4px', cursor: 'pointer' }}
+                        >
+                            Cancel Edit
+                        </button>
+                    )}
+                </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '2rem' }}>
                     <div>
@@ -225,7 +262,7 @@ export default function AdminCertificates() {
                         opacity: uploading ? 0.7 : 1
                     }}
                 >
-                    {uploading ? 'Uploading...' : 'Add Certificate'}
+                    {uploading ? 'Uploading...' : (editingId ? 'Update Certificate' : 'Add Certificate')}
                 </button>
             </form>
 
@@ -243,6 +280,14 @@ export default function AdminCertificates() {
                             </div>
                         </div>
                         <div className={styles.actions}>
+                            <button
+                                onClick={() => handleEdit(cert)}
+                                className={styles.actionButton}
+                                title="Edit Certificate"
+                                style={{ marginRight: '0.5rem', color: '#3b82f6' }}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            </button>
                             <button
                                 onClick={() => handleDelete(cert.id)}
                                 className={`${styles.actionButton} ${styles.deleteButton}`}
