@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { revalidatePath } from 'next/cache';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -15,7 +16,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         }
 
         return NextResponse.json(project);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch project' }, { status: 500 });
     }
 }
@@ -41,8 +42,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
             },
         });
 
+        revalidatePath('/projects');
         return NextResponse.json(project);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to update project' }, { status: 500 });
     }
 }
@@ -59,8 +61,9 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
             where: { id: parseInt(id) },
         });
 
+        revalidatePath('/projects');
         return NextResponse.json({ message: 'Project deleted' });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 });
     }
 }

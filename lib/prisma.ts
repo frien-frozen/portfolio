@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
+// Force reload
+
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
 export const prisma =

@@ -17,6 +17,7 @@ interface Project {
 export default function ProjectsPage() {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
+    const [draggedItem, setDraggedItem] = useState<Project | null>(null);
 
     useEffect(() => {
         fetchProjects();
@@ -44,8 +45,44 @@ export default function ProjectsPage() {
             if (res.ok) {
                 setProjects(projects.filter((p) => p.id !== id));
             }
-        } catch (error) {
+        } catch {
             alert('Error deleting project');
+        }
+    };
+
+    const onDragStartItem = (e: React.DragEvent, index: number) => {
+        setDraggedItem(projects[index]);
+        e.dataTransfer.effectAllowed = 'move';
+        // Optional: Set custom drag image
+    };
+
+    const onDragOverItem = (e: React.DragEvent, index: number) => {
+        e.preventDefault();
+        const draggedOverItem = projects[index];
+
+        if (draggedItem === draggedOverItem) return;
+
+        const items = projects.filter(item => item !== draggedItem);
+        items.splice(index, 0, draggedItem!);
+        setProjects(items);
+    };
+
+    const onDragEndItem = async () => {
+        setDraggedItem(null);
+
+        try {
+            const itemsWithOrder = projects.map((item, index) => ({
+                id: item.id,
+                order: index
+            }));
+
+            await fetch('/api/projects/reorder', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items: itemsWithOrder }),
+            });
+        } catch (error) {
+            console.error('Error saving order:', error);
         }
     };
 
@@ -62,10 +99,22 @@ export default function ProjectsPage() {
             </div>
 
             <div className={styles.list}>
-                {projects.map((project) => (
-                    <div key={project.id} className={styles.item}>
-                        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                {projects.map((project, index) => (
+                    <div
+                        key={project.id}
+                        className={styles.item}
+                        draggable
+                        onDragStart={(e) => onDragStartItem(e, index)}
+                        onDragOver={(e) => onDragOverItem(e, index)}
+                        onDragEnd={onDragEndItem}
+                        style={{ cursor: 'move', opacity: draggedItem === project ? 0.5 : 1 }}
+                    >
+                        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flex: 1 }}>
+                            <div style={{ color: '#9ca3af', cursor: 'grab' }} title="Drag to reorder">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle></svg>
+                            </div>
                             <div style={{ width: '80px', height: '60px', borderRadius: '4px', overflow: 'hidden', background: '#f3f4f6' }}>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img src={project.imageUrl} alt={project.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             </div>
                             <div className={styles.info}>

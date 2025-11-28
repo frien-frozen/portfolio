@@ -13,13 +13,13 @@ export default function TextScramble({ text, className }: TextScrambleProps) {
     const [displayText, setDisplayText] = useState(text);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    const scramble = () => {
+    useEffect(() => {
         let iteration = 0;
 
         if (intervalRef.current) clearInterval(intervalRef.current);
 
         intervalRef.current = setInterval(() => {
-            setDisplayText(prev =>
+            setDisplayText(() =>
                 text
                     .split('')
                     .map((letter, index) => {
@@ -37,10 +37,7 @@ export default function TextScramble({ text, className }: TextScrambleProps) {
 
             iteration += 1 / 3;
         }, 30);
-    };
 
-    useEffect(() => {
-        scramble();
         return () => {
             if (intervalRef.current) clearInterval(intervalRef.current);
         };

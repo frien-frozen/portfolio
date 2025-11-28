@@ -23,6 +23,7 @@ model Project {
   imageUrl    String
   link        String
   techStack   String
+  order       Int      @default(0)
   createdAt   DateTime @default(now())
 }
 

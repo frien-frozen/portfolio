@@ -9,7 +9,10 @@ export const metadata = {
 
 export default async function Projects() {
     const projects = await prisma.project.findMany({
-        orderBy: { createdAt: 'desc' },
+        orderBy: [
+            { order: 'asc' },
+            { createdAt: 'desc' }
+        ],
     });
 
     return (

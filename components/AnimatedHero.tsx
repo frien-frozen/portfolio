@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import Lottie from 'lottie-react';
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Github, Twitter, Linkedin, Mail, ArrowRight } from 'lucide-react';
 import styles from '../app/page.module.css';

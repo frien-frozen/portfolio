@@ -20,8 +20,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         }
 
         return NextResponse.json(post);
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to fetch post' }, { status: 500 });
+    } catch {
+        return NextResponse.json({ error: 'Error updating post' }, { status: 500 });
     }
 }
 
@@ -119,7 +119,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
         revalidatePath('/admin/posts');
 
         return NextResponse.json({ message: 'Post deleted' });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to delete post' }, { status: 500 });
     }
 }

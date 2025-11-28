@@ -2,8 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { ImageIcon } from 'lucide-react';
-import styles from '../posts/PostEditor.module.css'; // Reusing styles
+import { Upload } from 'lucide-react'; // Reusing styles
 
 interface ProjectEditorProps {
     initialData?: {
@@ -58,7 +57,7 @@ export default function ProjectEditor({ initialData }: ProjectEditorProps) {
             }
         } catch (error) {
             console.error('Error uploading image:', error);
-            alert(error instanceof Error ? error.message : 'Error uploading image');
+            alert('Failed to upload image');
         } finally {
             setUploading(false);
         }
@@ -87,7 +86,7 @@ export default function ProjectEditor({ initialData }: ProjectEditorProps) {
 
             router.push('/admin/projects');
             router.refresh();
-        } catch (error) {
+        } catch {
             alert('Error saving project');
         } finally {
             setSaving(false);
@@ -181,7 +180,7 @@ export default function ProjectEditor({ initialData }: ProjectEditorProps) {
                                 </div>
                             ) : !imageUrl && (
                                 <div style={{ textAlign: 'center', color: '#6b7280' }}>
-                                    <ImageIcon size={32} style={{ marginBottom: '0.5rem' }} />
+                                    <Upload size={32} style={{ marginBottom: '0.5rem' }} />
                                     <p style={{ fontSize: '0.9rem' }}>Click to upload</p>
                                 </div>
                             )}

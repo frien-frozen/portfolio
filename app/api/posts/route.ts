@@ -15,8 +15,8 @@ export async function GET() {
             },
         });
         return NextResponse.json(posts);
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 });
+    } catch {
+        return NextResponse.json({ error: 'Error fetching posts' }, { status: 500 });
     }
 }
 

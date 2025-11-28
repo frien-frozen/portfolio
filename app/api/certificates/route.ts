@@ -37,7 +37,7 @@ export async function POST(request: Request) {
         });
 
         return NextResponse.json(certificate);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Error creating certificate' }, { status: 500 });
     }
 }
