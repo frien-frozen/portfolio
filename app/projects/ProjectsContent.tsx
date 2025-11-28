@@ -42,12 +42,12 @@ export default function ProjectsContent({ projects }: { projects: Project[] }) {
             <motion.div
                 className={styles.grid}
                 variants={container}
-            // initial="hidden"
-            // animate="show"
+                initial="hidden"
+                animate="show"
             >
                 {projects.length > 0 ? (
                     projects.map((project) => (
-                        <motion.div key={project.id} style={{ height: '100%' }}>
+                        <motion.div key={project.id} variants={item} style={{ height: '100%' }}>
                             <ProjectCard
                                 title={project.title}
                                 description={project.description}
