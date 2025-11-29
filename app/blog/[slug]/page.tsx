@@ -5,6 +5,7 @@ import styles from './blog-post.module.css';
 import { Metadata } from 'next';
 import BlogPostContent from './BlogPostContent';
 import ScrollToTopButton from '../../../components/ScrollToTopButton';
+import { generateArticleSchema } from '../../../lib/structured-data';
 
 interface Props {
     params: Promise<{ slug: string }>;
@@ -14,6 +15,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params;
     const post = await prisma.post.findUnique({
         where: { slug },
+        include: {
+            tags: { include: { tag: true } },
+        },
     });
 
     if (!post) {
@@ -22,9 +26,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         };
     }
 
+    const keywords = post.tags.map(t => t.tag.name);
+
     return {
-        title: `${post.title} | Bakhtiyorov`,
+        title: post.title,
         description: post.excerpt || post.title,
+        keywords,
+        authors: [{ name: 'Ismatulloh Bakhtiyorov' }],
+        openGraph: {
+            title: post.title,
+            description: post.excerpt || post.title,
+            type: 'article',
+            publishedTime: post.publishedAt?.toISOString(),
+            modifiedTime: post.updatedAt.toISOString(),
+            authors: ['Ismatulloh Bakhtiyorov'],
+            tags: keywords,
+            url: `https://bakhtiyorov.com/blog/${slug}`,
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: post.title,
+            description: post.excerpt || post.title,
+        },
     };
 }
 
@@ -34,6 +57,7 @@ export default async function BlogPostPage({ params }: Props) {
         where: { slug },
         include: {
             author: { select: { email: true } },
+            tags: { include: { tag: true } },
         },
     });
 
@@ -52,8 +76,32 @@ export default async function BlogPostPage({ params }: Props) {
     const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
     const prevPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 
+    // Generate Article schema
+    const articleSchema = generateArticleSchema({
+        headline: post.title,
+        description: post.excerpt || post.title,
+        author: {
+            name: 'Ismatulloh Bakhtiyorov',
+            jobTitle: 'Software Engineer & Digital Artist',
+            url: 'https://bakhtiyorov.com',
+            sameAs: [
+                'https://github.com/baxt1y0rov',
+                'https://x.com/ismatullohbakh2',
+                'https://www.linkedin.com/in/baxtiyorov',
+            ],
+        },
+        datePublished: (post.publishedAt || post.createdAt).toISOString(),
+        dateModified: post.updatedAt.toISOString(),
+        url: `https://bakhtiyorov.com/blog/${slug}`,
+        keywords: post.tags.map(t => t.tag.name),
+    });
+
     return (
         <div className={styles.container}>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+            />
             <Link href="/blog" className={styles.backLink}>
                 ← Back to Blog
             </Link>

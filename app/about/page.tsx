@@ -5,6 +5,18 @@ import styles from './page.module.css';
 import { motion } from 'framer-motion';
 import { Code2, Palette, Video, Figma, PenTool, Layers, Cpu, Monitor, Paperclip, Award } from 'lucide-react';
 import ExperienceSection from "./ExperienceSection";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'About',
+    description: 'Learn more about Ismatulloh Bakhtiyorov - Software Engineer & Digital Artist. Discover my background, skills, experience, and passion for creating exceptional digital experiences.',
+    openGraph: {
+        title: 'About Ismatulloh Bakhtiyorov',
+        description: 'Learn more about my background, skills, and experience as a Software Engineer & Digital Artist.',
+        url: 'https://bakhtiyorov.com/about',
+        type: 'profile',
+    },
+};
 
 const technologies = [
     { name: 'React', icon: Code2 },

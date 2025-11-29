@@ -1,9 +1,16 @@
 import { prisma } from '../../lib/prisma';
 import BlogContent from './BlogContent';
+import type { Metadata } from 'next';
 
-export const metadata = {
-    title: 'Blog | Bakhtiyorov',
-    description: 'Thoughts on development, design, and technology.',
+export const metadata: Metadata = {
+    title: 'Blog',
+    description: 'Thoughts, tutorials, and insights on web development, software engineering, design, and technology by Ismatulloh Bakhtiyorov.',
+    openGraph: {
+        title: 'Blog - Ismatulloh Bakhtiyorov',
+        description: 'Thoughts, tutorials, and insights on web development, software engineering, design, and technology.',
+        url: 'https://bakhtiyorov.com/blog',
+        type: 'website',
+    },
 };
 
 export const dynamic = 'force-dynamic';
