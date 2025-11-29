@@ -6,4 +6,4 @@ Disallow: /admin/
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://bakhtiyorov.com/sitemap.xml
+Sitemap: https://baxtiyorov.uz/sitemap.xml

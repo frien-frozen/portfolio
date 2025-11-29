@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Blog - Ismatulloh Bakhtiyorov',
         description: 'Thoughts, tutorials, and insights on web development, software engineering, design, and technology.',
-        url: 'https://bakhtiyorov.com/blog',
+        url: 'https://baxtiyorov.uz/blog',
         type: 'website',
     },
 };

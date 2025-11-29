@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Projects by Ismatulloh Bakhtiyorov',
         description: 'Explore my portfolio of web development projects and creative digital experiences.',
-        url: 'https://bakhtiyorov.com/projects',
+        url: 'https://baxtiyorov.uz/projects',
         type: 'website',
     },
 };

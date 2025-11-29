@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             modifiedTime: post.updatedAt.toISOString(),
             authors: ['Ismatulloh Bakhtiyorov'],
             tags: keywords,
-            url: `https://bakhtiyorov.com/blog/${slug}`,
+            url: `https://baxtiyorov.uz/blog/${slug}`,
         },
         twitter: {
             card: 'summary_large_image',
@@ -83,7 +83,7 @@ export default async function BlogPostPage({ params }: Props) {
         author: {
             name: 'Ismatulloh Bakhtiyorov',
             jobTitle: 'Software Engineer & Digital Artist',
-            url: 'https://bakhtiyorov.com',
+            url: 'https://baxtiyorov.uz',
             sameAs: [
                 'https://github.com/baxt1y0rov',
                 'https://x.com/ismatullohbakh2',
@@ -92,7 +92,7 @@ export default async function BlogPostPage({ params }: Props) {
         },
         datePublished: (post.publishedAt || post.createdAt).toISOString(),
         dateModified: post.updatedAt.toISOString(),
-        url: `https://bakhtiyorov.com/blog/${slug}`,
+        url: `https://baxtiyorov.uz/blog/${slug}`,
         keywords: post.tags.map(t => t.tag.name),
     });
 

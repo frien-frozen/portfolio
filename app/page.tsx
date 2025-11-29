@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Ismatulloh Bakhtiyorov - Software Engineer & Digital Artist',
     description: 'Specializing in building exceptional digital experiences with modern web technologies.',
-    url: 'https://bakhtiyorov.com',
+    url: 'https://baxtiyorov.uz',
     type: 'website',
   },
 };
@@ -38,9 +38,9 @@ export default async function Home() {
   const personSchema = generatePersonSchema({
     name: 'Ismatulloh Bakhtiyorov',
     jobTitle: 'Software Engineer & Digital Artist',
-    url: 'https://bakhtiyorov.com',
+    url: 'https://baxtiyorov.uz',
     email: 'ismatullohbakh2010@gmail.com',
-    image: 'https://bakhtiyorov.com/profile.jpg',
+    image: 'https://baxtiyorov.uz/profile.jpg',
     sameAs: [
       'https://github.com/baxt1y0rov',
       'https://x.com/ismatullohbakh2',
@@ -49,7 +49,7 @@ export default async function Home() {
   });
 
   const websiteSchema = generateWebSiteSchema(
-    'https://bakhtiyorov.com',
+    'https://baxtiyorov.uz',
     'Ismatulloh Bakhtiyorov'
   );
 

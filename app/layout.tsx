@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://bakhtiyorov.com'),
+  metadataBase: new URL('https://baxtiyorov.uz'),
   title: {
     default: 'Ismatulloh Bakhtiyorov - Software Engineer & Digital Artist',
     template: '%s | Ismatulloh Bakhtiyorov',
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://bakhtiyorov.com',
+    url: 'https://baxtiyorov.uz',
     title: 'Ismatulloh Bakhtiyorov - Software Engineer & Digital Artist',
     description: 'Personal portfolio and blog of Ismatulloh Bakhtiyorov. Software Engineer specializing in web development, digital art, and building exceptional digital experiences.',
     siteName: 'Ismatulloh Bakhtiyorov',
