@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
 import styles from '../admin.module.css';
 
 interface Project {
@@ -12,6 +12,7 @@ interface Project {
     imageUrl: string;
     link: string;
     techStack: string;
+    visible: boolean;
 }
 
 export default function ProjectsPage() {
@@ -47,6 +48,23 @@ export default function ProjectsPage() {
             }
         } catch {
             alert('Error deleting project');
+        }
+    };
+
+    const toggleVisibility = async (id: number, currentVisibility: boolean) => {
+        try {
+            const res = await fetch(`/api/projects/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ visible: !currentVisibility }),
+            });
+            if (res.ok) {
+                setProjects(projects.map(p =>
+                    p.id === id ? { ...p, visible: !currentVisibility } : p
+                ));
+            }
+        } catch {
+            alert('Error updating visibility');
         }
     };
 
@@ -123,6 +141,13 @@ export default function ProjectsPage() {
                             </div>
                         </div>
                         <div className={styles.actions}>
+                            <button
+                                onClick={() => toggleVisibility(project.id, project.visible)}
+                                className={styles.actionButton}
+                                title={project.visible ? 'Hide project' : 'Show project'}
+                            >
+                                {project.visible ? <Eye size={18} /> : <EyeOff size={18} />}
+                            </button>
                             <Link href={`/admin/projects/${project.id}`} className={styles.actionButton}>
                                 <Edit size={18} />
                             </Link>

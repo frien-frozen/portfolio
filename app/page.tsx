@@ -22,6 +22,7 @@ export const metadata: Metadata = {
 export default async function Home() {
   // Fetch published projects and posts
   const projects = await prisma.project.findMany({
+    where: { visible: true },
     take: 3,
     orderBy: [
       { order: 'asc' },
@@ -30,7 +31,10 @@ export default async function Home() {
   });
 
   const posts = await prisma.post.findMany({
-    where: { published: true },
+    where: {
+      published: true,
+      visible: true,
+    },
     take: 3,
     orderBy: { createdAt: 'desc' },
   });

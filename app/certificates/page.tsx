@@ -35,7 +35,7 @@ export default function CertificatesPage() {
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
     useEffect(() => {
-        fetch('/api/certificates', {
+        fetch('/api/certificates?visible=true', { // Added visible=true query parameter
             cache: 'no-store',
             headers: { 'Cache-Control': 'no-cache' }
         })

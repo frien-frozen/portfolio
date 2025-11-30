@@ -49,6 +49,38 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     }
 }
 
+export async function PATCH(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    try {
+        const { id } = await params;
+        const body = await request.json();
+
+        // Toggle visibility
+        if (body.visible !== undefined) {
+            const project = await prisma.project.update({
+                where: { id: parseInt(id) },
+                data: { visible: body.visible },
+            });
+
+            revalidatePath('/projects');
+            revalidatePath('/');
+
+            return NextResponse.json(project);
+        }
+
+        return NextResponse.json({ error: 'No update data provided' }, { status: 400 });
+    } catch {
+        return NextResponse.json({ error: 'Failed to update project' }, { status: 500 });
+    }
+}
+
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const session = await getServerSession(authOptions);

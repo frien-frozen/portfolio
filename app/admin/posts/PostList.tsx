@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface Post {
     id: number;
     title: string;
     published: boolean;
+    visible: boolean;
     publishedAt?: string | Date | null;
     createdAt: string | Date;
 }
@@ -35,6 +37,21 @@ export default function PostList({ posts }: { posts: Post[] }) {
         } catch (error) {
             console.error('Delete error:', error);
             alert('Error deleting post: ' + error);
+        }
+    };
+
+    const toggleVisibility = async (id: number, currentVisibility: boolean) => {
+        try {
+            const res = await fetch(`/api/posts/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ visible: !currentVisibility }),
+            });
+            if (res.ok) {
+                router.refresh();
+            }
+        } catch {
+            alert('Error updating visibility');
         }
     };
 
@@ -71,6 +88,13 @@ export default function PostList({ posts }: { posts: Post[] }) {
                                 : new Date(post.createdAt).toLocaleDateString()}
                         </td>
                         <td style={{ padding: '1rem', textAlign: 'right', borderBottom: '1px solid #f3f4f6' }}>
+                            <button
+                                onClick={() => toggleVisibility(post.id, post.visible)}
+                                style={{ background: 'none', border: 'none', color: post.visible ? '#059669' : '#9ca3af', cursor: 'pointer', marginRight: '1rem', padding: '0.25rem' }}
+                                title={post.visible ? 'Hide post' : 'Show post'}
+                            >
+                                {post.visible ? <Eye size={18} /> : <EyeOff size={18} />}
+                            </button>
                             <Link href={`/admin/posts/${post.id}`} style={{ marginRight: '1rem', color: '#2563eb', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem' }}>
                                 Edit
                             </Link>

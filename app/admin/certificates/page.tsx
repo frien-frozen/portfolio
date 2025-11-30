@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Trash2, ImageIcon, Calendar, Type } from 'lucide-react';
+import { Trash2, ImageIcon, Calendar, Type, Eye, EyeOff } from 'lucide-react';
 import styles from '../admin.module.css';
 
 interface Certificate {
@@ -10,6 +10,7 @@ interface Certificate {
     title: string;
     date: string;
     imageUrl: string;
+    visible: boolean;
 }
 
 export default function AdminCertificates() {
@@ -170,6 +171,23 @@ export default function AdminCertificates() {
             }
         } catch (error) {
             console.error('Error deleting certificate:', error);
+        }
+    };
+
+    const toggleVisibility = async (id: number, currentVisibility: boolean) => {
+        try {
+            const res = await fetch(`/api/certificates/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ visible: !currentVisibility }),
+            });
+            if (res.ok) {
+                setCertificates(certificates.map(c =>
+                    c.id === id ? { ...c, visible: !currentVisibility } : c
+                ));
+            }
+        } catch {
+            alert('Error updating visibility');
         }
     };
 
@@ -356,6 +374,14 @@ export default function AdminCertificates() {
                             </div>
                         </div>
                         <div className={styles.actions}>
+                            <button
+                                onClick={() => toggleVisibility(cert.id, cert.visible)}
+                                className={styles.actionButton}
+                                title={cert.visible ? 'Hide certificate' : 'Show certificate'}
+                                style={{ marginRight: '0.5rem' }}
+                            >
+                                {cert.visible ? <Eye size={18} /> : <EyeOff size={18} />}
+                            </button>
                             <button
                                 onClick={() => handleEdit(cert)}
                                 className={styles.actionButton}

@@ -7,6 +7,10 @@ import { revalidatePath } from 'next/cache';
 export async function GET() {
     try {
         const posts = await prisma.post.findMany({
+            where: {
+                published: true,
+                visible: true,
+            },
             orderBy: { createdAt: 'desc' },
             include: {
                 author: { select: { email: true } },

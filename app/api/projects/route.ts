@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache';
 export async function GET() {
     try {
         const projects = await prisma.project.findMany({
+            where: { visible: true },
             orderBy: [
                 { order: 'asc' },
                 { createdAt: 'desc' }
