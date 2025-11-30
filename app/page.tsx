@@ -8,11 +8,12 @@ import type { Metadata } from 'next';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Home',
-  description: 'Ismatulloh Bakhtiyorov - Software Engineer & Digital Artist. Specializing in building exceptional digital experiences with modern web technologies.',
+  title: 'Ismatulloh Bakhtiyorov | Bakhtiyorov',
+  description: 'Ismatulloh Bakhtiyorov (Bakhtiyorov) - Software Engineer & Digital Artist. Portfolio showcasing web development projects, blog posts, and digital art by Ismatulloh.',
+  keywords: ['Ismatulloh', 'Bakhtiyorov', 'Ismatulloh Bakhtiyorov', 'Software Engineer', 'Web Developer', 'Portfolio'],
   openGraph: {
-    title: 'Ismatulloh Bakhtiyorov - Software Engineer & Digital Artist',
-    description: 'Specializing in building exceptional digital experiences with modern web technologies.',
+    title: 'Ismatulloh Bakhtiyorov | Bakhtiyorov',
+    description: 'Software Engineer & Digital Artist. Portfolio and projects by Ismatulloh.',
     url: 'https://baxtiyorov.uz',
     type: 'website',
   },
