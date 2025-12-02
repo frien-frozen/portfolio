@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
 
+User-agent: Google-Extended
+Allow: /
+
 # Disallow admin routes
 Disallow: /admin/
 Disallow: /api/
