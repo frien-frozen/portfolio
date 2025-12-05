@@ -84,11 +84,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico' },
+      { url: '/favicon.ico', sizes: 'any' },
       { url: '/icon.png', type: 'image/png', sizes: '512x512' },
     ],
-    shortcut: '/favicon.ico',
-    apple: '/apple-icon.png',
+    apple: [
+      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
   verification: {
     // Add your verification codes here when you set up Google Search Console
@@ -107,6 +108,23 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ConditionalLayout>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'SiteNavigationElement',
+                name: ['Home', 'About', 'Projects', 'Blog', 'Contact'],
+                url: [
+                  'https://baxtiyorov.uz',
+                  'https://baxtiyorov.uz/about',
+                  'https://baxtiyorov.uz/projects',
+                  'https://baxtiyorov.uz/blog',
+                  'https://baxtiyorov.uz/contact',
+                ],
+              }),
+            }}
+          />
           {children}
         </ConditionalLayout>
       </body>
